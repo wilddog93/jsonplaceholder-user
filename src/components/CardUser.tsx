@@ -16,6 +16,7 @@ import {
 import { UserProps } from '@/stores/features/users/userReducers';
 import { ContentCopy, Delete, Edit, MoreVert } from '@mui/icons-material';
 import { DetailUser } from './DetailUser';
+import { FormUser } from './FormUser';
 
 type Users = {
   user?: UserProps;
@@ -29,6 +30,8 @@ type Users = {
 
 export const CardUser: FC<Users> = ({ user, loading }) => {
   const [isOpenDetail, setIsOpenDetail] = useState<boolean>(false);
+  const [isOpenUpdate, setIsOpenUpdate] = useState<boolean>(false);
+  const [formValue, setFormValue] = useState<UserProps>({});
 
   const onOpenCardDetail = () => {
     setIsOpenDetail(true)
@@ -86,17 +89,25 @@ export const CardUser: FC<Users> = ({ user, loading }) => {
                   }}
                   variant='menu'
                 >
-                  <MenuItem onClick={() => {
-                    onOpenCardDetail()
-                    handleClose()
-                  }}>
+                  <MenuItem 
+                    onClick={() => {
+                      onOpenCardDetail()
+                      handleClose()
+                    }}
+                  >
                     <ListItemIcon>
                       <ContentCopy fontSize="small" />
                     </ListItemIcon>
                     <ListItemText>Detail</ListItemText>
                   </MenuItem>
 
-                  <MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      setIsOpenUpdate(true)
+                      setFormValue(user)
+                      handleClose()
+                    }}
+                  >
                     <ListItemIcon>
                       <Edit fontSize="small" />
                     </ListItemIcon>
@@ -167,6 +178,17 @@ export const CardUser: FC<Users> = ({ user, loading }) => {
         isOpen={isOpenDetail}
         onClose={onCloseCardDetail}
         user={user}
+      />
+
+      {/* modal-update */}
+      <FormUser 
+        isOpen={isOpenUpdate}
+        onClose={() => {
+          setIsOpenUpdate(false)
+          setFormValue({});
+        }}
+        user={formValue}
+        isUpdate
       />
     </Fragment>
   )
