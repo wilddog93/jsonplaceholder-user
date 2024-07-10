@@ -1,8 +1,8 @@
-import LandingPage from './pages/LandingPage'
+import UserPages from "./pages/UserPages"
+
 
 function App() {
-
-  return (<LandingPage />)
+  return <UserPages />
 }
 
 export default App
