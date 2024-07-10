@@ -1,10 +1,8 @@
 import { Box, Button, Container, Typography } from '@mui/material';
-import { useRouteError, useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 
 export default function ErrorPage() {
-  const error = useRouteError();
   const navigate = useNavigate();
-  console.error(error);
   // Uncaught ReferenceError: path is not defined
   return (
     <Container

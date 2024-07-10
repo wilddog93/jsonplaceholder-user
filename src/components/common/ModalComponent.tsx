@@ -64,7 +64,8 @@ const ModalComponent: FC<ModalProps> = ({ isOpen, handleClose, children, size, p
       transform: 'translate(-50%, -50%)',
       width: sizes,
       bgcolor: 'background.paper',
-      p: 2
+      p: 2,
+      borderRadius: "10px"
     };
     return style;
   }, [sizes, positions])

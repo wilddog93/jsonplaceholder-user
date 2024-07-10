@@ -1,4 +1,4 @@
-import { Link, PaletteMode } from '@mui/material';
+import { PaletteMode } from '@mui/material';
 import Box from '@mui/material/Box';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -8,9 +8,10 @@ import Typography from '@mui/material/Typography';
 import MenuItem from '@mui/material/MenuItem';
 import Drawer from '@mui/material/Drawer';
 import MenuIcon from '@mui/icons-material/Menu';
-import ToggleColorMode from './ToogleColorMode';
+import ToggleColorMode from '@/components/ToogleColorMode';
 import { useState } from 'react';
-import CustomLink from './common/CustomLink';
+import CustomLink from '@/components/common/CustomLink';
+import { Link } from 'react-router-dom';
 
 interface HeaderProps {
   mode: PaletteMode;
@@ -72,7 +73,7 @@ function Header({ mode, toggleColorMode }: HeaderProps) {
                 px: 0,
               }}
             >
-              <Link sx={{ px: '5px', textDecoration: 'none' }} color="text.primary" href="/">
+              <Link to="/" style={{ textDecoration: "none" }}>
                 <Typography variant="h6" color="text.primary" sx={{ fontWeight: "600" }}>
                   JSONPlaceholder
                 </Typography>

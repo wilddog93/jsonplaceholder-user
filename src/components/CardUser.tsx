@@ -1,12 +1,25 @@
-import { Avatar, Box, Card, CardContent, CardHeader, Typography } from '@mui/material'
-import { FC, Fragment, useState } from 'react'
-import ModalComponent from './common/ModalComponent';
+import { FC, Fragment, MouseEvent, useState } from 'react'
+import { 
+  Avatar, 
+  Card, 
+  CardContent, 
+  CardHeader, 
+  CardMedia, 
+  IconButton, 
+  ListItemIcon, 
+  ListItemText, 
+  Menu, 
+  MenuItem, 
+  Skeleton, 
+  Typography 
+} from '@mui/material'
+import { UserProps } from '@/stores/features/users/userReducers';
+import { ContentCopy, Delete, Edit, MoreVert } from '@mui/icons-material';
+import { DetailUser } from './DetailUser';
 
 type Users = {
-  avatar?: string;
-  name?: string;
-  occupation?: string;
-  description?: string;
+  user?: UserProps;
+  loading?: boolean;
 };
 
 // const logoStyle = {
@@ -14,63 +27,147 @@ type Users = {
 //   opacity: 0.3,
 // };
 
-export const CardUser: FC<Users> = ({ avatar, name, occupation, description }) => {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+export const CardUser: FC<Users> = ({ user, loading }) => {
+  const [isOpenDetail, setIsOpenDetail] = useState<boolean>(false);
 
-  const onOpenCard = () => {
-    setIsOpen(true)
+  const onOpenCardDetail = () => {
+    setIsOpenDetail(true)
   }
 
-  const onCloseCard = () => {
-    setIsOpen(false)
+  const onCloseCardDetail = () => {
+    setIsOpenDetail(false)
   }
+
+  // setting-button
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   return (
     <Fragment>
-      <Card
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          flexGrow: 1,
-          p: 1,
-          ":hover": {
-            cursor: "pointer"
+      <Card sx={{ width: "100%", minWidth: 345, m: 2 }}>
+        <CardHeader
+          avatar={
+            loading ? (
+              <Skeleton animation="wave" variant="circular" width={40} height={40} />
+            ) : (
+              <Avatar
+                alt={user.username}
+                src={user.avatar}
+              />
+            )
           }
-        }}
-        onClick={onOpenCard}
-      >
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            pr: 2,
-          }}
-        >
-          <CardHeader
-            avatar={<Avatar alt={name} src={avatar} />}
-            title={name}
-            subheader={occupation}
+          action={
+            loading ? null : (
+              <Fragment>
+                <IconButton 
+                  aria-label="settings"
+                  id="basic-button"
+                  aria-controls={open ? 'basic-menu' : undefined}
+                  aria-haspopup="true"
+                  aria-expanded={open ? 'true' : undefined}
+                  onClick={handleClick}
+                >
+                  <MoreVert />
+                </IconButton>
+
+                <Menu
+                  id="basic-menu"
+                  anchorEl={anchorEl}
+                  open={open}
+                  onClose={handleClose}
+                  MenuListProps={{
+                    'aria-labelledby': 'basic-button',
+                  }}
+                  variant='menu'
+                >
+                  <MenuItem onClick={() => {
+                    onOpenCardDetail()
+                    handleClose()
+                  }}>
+                    <ListItemIcon>
+                      <ContentCopy fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText>Detail</ListItemText>
+                  </MenuItem>
+
+                  <MenuItem>
+                    <ListItemIcon>
+                      <Edit fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText>Edit</ListItemText>
+                  </MenuItem>
+
+                  <MenuItem>
+                    <ListItemIcon>
+                      <Delete fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText>Delete</ListItemText>
+                  </MenuItem>
+                </Menu>
+              </Fragment>
+            )
+          }
+          title={
+            loading ? (
+              <Skeleton
+                animation="wave"
+                height={10}
+                width="80%"
+                style={{ marginBottom: 6 }}
+              />
+            ) : (user.name)
+          }
+          subheader={
+            loading ? (
+              <Skeleton animation="wave" height={10} width="40%" />
+            ) : (user.email)
+          }
+        />
+        {loading ? (
+          <Skeleton sx={{ height: 190 }} animation="wave" variant="rectangular" />
+        ) : (
+          <CardMedia
+            component="img"
+            height="140"
+            image={user.avatar}
+            alt={user.name}
+            sx={{ width: "100%", objectFit: "cover", objectPosition: "center" }}
           />
-        </Box>
+        )}
         <CardContent>
-          <Typography variant="body2" color="text.secondary">
-            {description}
-          </Typography>
+          {loading ? (
+            <Fragment>
+              <Skeleton animation="wave" height={10} style={{ marginBottom: 6 }} />
+              <Skeleton animation="wave" height={10} width="80%" />
+            </Fragment>
+          ) : (
+            <Fragment>
+              <Typography variant="body2" color="text.secondary" component="p">
+              {user.address.street}
+            </Typography>
+            <Typography variant="body2" color="text.secondary" component="p">
+              {user.address.suite}
+            </Typography>
+            <Typography variant="body2" color="text.secondary" component="p">
+              {user.address.city}
+            </Typography>
+            </Fragment>
+          )}
         </CardContent>
       </Card>
 
-      <ModalComponent isOpen={isOpen} handleClose={onCloseCard} size='md' position='center'>
-        <div>
-          <Typography id="transition-modal-title" variant="h6" component="h2">
-            Text in a modal
-          </Typography>
-          <Typography id="transition-modal-description" sx={{ mt: 2 }}>
-            Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-          </Typography>
-        </div>
-      </ModalComponent>
+      {/* modal-detail */}
+      <DetailUser 
+        isOpen={isOpenDetail}
+        onClose={onCloseCardDetail}
+        user={user}
+      />
     </Fragment>
   )
 }
