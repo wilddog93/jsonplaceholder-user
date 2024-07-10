@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { Link, PaletteMode } from '@mui/material';
 import Box from '@mui/material/Box';
 import AppBar from '@mui/material/AppBar';
@@ -10,6 +9,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Drawer from '@mui/material/Drawer';
 import MenuIcon from '@mui/icons-material/Menu';
 import ToggleColorMode from './ToogleColorMode';
+import { useState } from 'react';
 
 interface HeaderProps {
   mode: PaletteMode;
@@ -17,7 +17,7 @@ interface HeaderProps {
 }
 
 function Header({ mode, toggleColorMode }: HeaderProps) {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
 
   const toggleDrawer = (newOpen: boolean) => () => {
     setOpen(newOpen);
