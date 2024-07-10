@@ -10,6 +10,7 @@ import Drawer from '@mui/material/Drawer';
 import MenuIcon from '@mui/icons-material/Menu';
 import ToggleColorMode from './ToogleColorMode';
 import { useState } from 'react';
+import CustomLink from './common/CustomLink';
 
 interface HeaderProps {
   mode: PaletteMode;
@@ -77,14 +78,15 @@ function Header({ mode, toggleColorMode }: HeaderProps) {
                 </Typography>
               </Link>
               <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-                <MenuItem
-                  onClick={() => scrollToSection('testimonials')}
-                  sx={{ py: '6px', px: '12px' }}
-                >
-                  <Typography variant="body1" color="text.secondary">
-                    Home
-                  </Typography>
-                </MenuItem>
+                <CustomLink to={'/'}>
+                  Home
+                </CustomLink>
+                <CustomLink to={'/about'}>
+                  About
+                </CustomLink>
+                <CustomLink to={'/404'}>
+                  404
+                </CustomLink>
               </Box>
             </Box>
             <Box

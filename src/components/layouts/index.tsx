@@ -4,13 +4,10 @@ import Box from '@mui/material/Box';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import Footer from '../Footer';
 import Header from '../Header';
-import { FC, ReactNode, useState } from 'react';
+import { useState } from 'react';
+import { Outlet } from 'react-router';
 
-interface LayoutProps {
-  children?: ReactNode;
-}
-
-const LayoutApps: FC<LayoutProps> = ({ children }) => {
+const LayoutApps = () => {
   const [mode, setMode] = useState<PaletteMode>('dark');
   const defaultTheme = createTheme({ palette: { mode } });
 
@@ -23,7 +20,7 @@ const LayoutApps: FC<LayoutProps> = ({ children }) => {
       <CssBaseline />
       <Header mode={mode} toggleColorMode={toggleColorMode} />
       <Box sx={{ bgcolor: 'background.default' }}>
-        {children}
+        <Outlet />
       </Box>
       <Footer />
     </ThemeProvider>
