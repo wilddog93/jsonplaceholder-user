@@ -5,11 +5,15 @@ import Grid from '@mui/material/Grid';
 import { CardUser } from '@/components/CardUser';
 import { useAppDispatch, useAppSelector } from '@/stores/Hooks';
 import { getUsers, selectUsers, UserProps } from '@/stores/features/users/userReducers';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import Button from '@mui/material/Button'
+import { Add } from '@mui/icons-material';
+import { FormUser } from '@/components/FormUser';
 
 export default function UserPages() {
   const dispatch = useAppDispatch();
   const { users, pending } = useAppSelector(selectUsers);
+  const [isOpenForm, setIsOpenForm] = useState<boolean>(false);
 
   const filters = useMemo(() => {
     const params = {}
@@ -32,8 +36,6 @@ export default function UserPages() {
     }
     return result
   }, [users])
-
-  console.log(UserData, 'users-data')
 
   return (
     <Container
@@ -58,6 +60,32 @@ export default function UserPages() {
           Users
         </Typography>
       </Box>
+
+      <Box
+        sx={{
+          width: "100%",
+          display: "flex",
+          flexDirection: "row",
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+      >
+        <Button 
+          variant="contained"
+          sx={{ 
+            display: "inline-flex",
+            alignItems: 'center',
+            gap: 1
+          }}
+          onClick={() => setIsOpenForm(true)}
+        >
+          <Add />
+          <Typography variant="body2">
+            New user
+          </Typography>
+        </Button>
+      </Box>
+
       <Grid container spacing={2}>
         {UserData.map((user, index) => (
           <Grid item xs={12} sm={6} md={4} key={index} sx={{ display: 'flex' }}>
@@ -65,6 +93,13 @@ export default function UserPages() {
           </Grid>
         ))}
       </Grid>
+
+      <FormUser 
+        isOpen={isOpenForm}
+        onClose={() => {
+          setIsOpenForm(false)
+        }}
+      />
     </Container>
   );
 }

@@ -79,9 +79,17 @@ function isRejectedAction(action: AnyAction): action is RejectedAction {
   return action.type.endsWith("rejected");
 }
 
+// user-data-action
+interface UserActionProps {
+  id?: string | number;
+  data: UserProps;
+  isSuccess: () => Promise<void>;
+  isError: (error:any) => Promise<void>;
+}
+
 // get-users
 export const getUsers = createAsyncThunk<any, AxiosRequestConfig, { state: RootState }>(
-  prefix,
+  "get-users",
   async (params) => {
     config = {
       ...config,
@@ -98,6 +106,58 @@ export const getUsers = createAsyncThunk<any, AxiosRequestConfig, { state: RootS
     } catch (error: any) {
       const { data, status } = error.response;
       const newError: any = { message: data?.error?.message };
+      if (status === 404) {
+        throw new Error("User not found");
+      } else {
+        throw new Error(newError.message);
+      }
+    }
+  }
+);
+
+// create-user
+export const createUser = createAsyncThunk<any, UserActionProps, { state: RootState }>(
+  "create-user",
+  async (formData) => {
+    try {
+      const response = await axios.post(prefix, formData.data, config);
+      const { data, status } = response;
+      if (status == 201) {
+        await formData.isSuccess();
+        return data;
+      } else {
+        throw response;
+      }
+    } catch (error: any) {
+      const { data, status } = error.response;
+      const newError: any = { message: data?.error?.message };
+      await formData.isError(newError);
+      if (status === 404) {
+        throw new Error("User not found");
+      } else {
+        throw new Error(newError.message);
+      }
+    }
+  }
+);
+
+// update-user
+export const updateUser = createAsyncThunk<any, UserActionProps, { state: RootState }>(
+  "update-user",
+  async (formData) => {
+    try {
+      const response = await axios.patch(`${prefix}/${formData?.id}`, formData.data, config);
+      const { data, status } = response;
+      if (status == 200) {
+        await formData.isSuccess();
+        return data;
+      } else {
+        throw response;
+      }
+    } catch (error: any) {
+      const { data, status } = error.response;
+      const newError: any = { message: data?.error?.message };
+      await formData.isError(newError);
       if (status === 404) {
         throw new Error("User not found");
       } else {
@@ -141,6 +201,54 @@ export const userSlice = createSlice({
         };
       })
       .addCase(getUsers.rejected, (state, { error }) => {
+        state.pending = false;
+        state.error = true;
+        state.message = error.message;
+      })
+
+      // create-users
+      .addCase(createUser.pending, (state) => {
+        return {
+          ...state,
+          pending: true,
+        };
+      })
+      .addCase(createUser.fulfilled, (state, { payload }) => {
+        return {
+          ...state,
+          pending: false,
+          error: false,
+          users: [...state.users, payload],
+        };
+      })
+      .addCase(createUser.rejected, (state, { error }) => {
+        state.pending = false;
+        state.error = true;
+        state.message = error.message;
+      })
+
+      // update-user
+      .addCase(updateUser.pending, (state) => {
+        return {
+          ...state,
+          pending: true,
+        };
+      })
+      .addCase(updateUser.fulfilled, (state, { payload }) => {
+        const updatedUsers = state.users.map((user) => {
+          if (user?.id === payload?.id) {
+            user = payload
+          }
+          return user;
+        });
+        return {
+          ...state,
+          pending: false,
+          error: false,
+          users: updatedUsers,
+        };
+      })
+      .addCase(updateUser.rejected, (state, { error }) => {
         state.pending = false;
         state.error = true;
         state.message = error.message;
