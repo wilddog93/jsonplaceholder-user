@@ -82,11 +82,8 @@ function Header({ mode, toggleColorMode }: HeaderProps) {
                 <CustomLink to={'/'}>
                   Home
                 </CustomLink>
-                <CustomLink to={'/about'}>
-                  About
-                </CustomLink>
-                <CustomLink to={'/404'}>
-                  404
+                <CustomLink to={'/blogs'}>
+                  Blogs
                 </CustomLink>
               </Box>
             </Box>

@@ -8,7 +8,7 @@ import { useState } from 'react';
 import { Outlet } from 'react-router';
 
 const LayoutApps = () => {
-  const [mode, setMode] = useState<PaletteMode>('dark');
+  const [mode, setMode] = useState<PaletteMode>('light');
   const defaultTheme = createTheme({ palette: { mode } });
 
   const toggleColorMode = () => {

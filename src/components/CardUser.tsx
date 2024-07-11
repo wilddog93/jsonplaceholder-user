@@ -1,22 +1,32 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { FC, Fragment, MouseEvent, useState } from 'react'
 import { 
+  Alert,
   Avatar, 
+  Box, 
+  Button, 
   Card, 
   CardContent, 
   CardHeader, 
   CardMedia, 
+  CircularProgress, 
+  Container, 
+  Divider, 
   IconButton, 
   ListItemIcon, 
   ListItemText, 
   Menu, 
   MenuItem, 
   Skeleton, 
+  Snackbar, 
   Typography 
 } from '@mui/material'
-import { UserProps } from '@/stores/features/users/userReducers';
+import { deleteUser, selectUsers, UserProps } from '@/stores/features/users/userReducers';
 import { ContentCopy, Delete, Edit, MoreVert } from '@mui/icons-material';
 import { DetailUser } from './DetailUser';
 import { FormUser } from './FormUser';
+import ModalComponent from './common/ModalComponent';
+import { useAppDispatch, useAppSelector } from '@/stores/Hooks';
 
 type Users = {
   user?: UserProps;
@@ -29,8 +39,12 @@ type Users = {
 // };
 
 export const CardUser: FC<Users> = ({ user, loading }) => {
+  const dispatch = useAppDispatch();
+  const { pending } = useAppSelector(selectUsers);
+
   const [isOpenDetail, setIsOpenDetail] = useState<boolean>(false);
   const [isOpenUpdate, setIsOpenUpdate] = useState<boolean>(false);
+  const [isOpenDelete, setIsOpenDelete] = useState<boolean>(false);
   const [formValue, setFormValue] = useState<UserProps>({});
 
   const onOpenCardDetail = () => {
@@ -51,9 +65,32 @@ export const CardUser: FC<Users> = ({ user, loading }) => {
     setAnchorEl(null);
   };
 
+  const [isOpenAlert, setIsOpenAlert] = useState<boolean>(false);
+  const [isMessage, setIsMessage] = useState<string>("");
+
+  const handleCloseAlert = () => {
+    setIsMessage("");
+    setIsOpenAlert(false);
+  }
+
+  const onDeleteUser = (id?:number | string) => {
+    if(!id) return;
+    dispatch(deleteUser({
+      id: user.id,
+      isSuccess: async () => {
+        setIsOpenDelete(false)
+        setIsOpenAlert(true);
+        setIsMessage("User has been deleted.");
+      },
+      isError: async(error: any) => {
+        console.log(error)
+      }
+    }))
+  }
+
   return (
     <Fragment>
-      <Card sx={{ width: "100%", minWidth: 345, m: 2 }}>
+      <Card sx={{ width: "100%", minWidth: 345 }}>
         <CardHeader
           avatar={
             loading ? (
@@ -114,7 +151,12 @@ export const CardUser: FC<Users> = ({ user, loading }) => {
                     <ListItemText>Edit</ListItemText>
                   </MenuItem>
 
-                  <MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      setIsOpenDelete(true)
+                      handleClose()
+                    }}
+                  >
                     <ListItemIcon>
                       <Delete fontSize="small" />
                     </ListItemIcon>
@@ -190,6 +232,86 @@ export const CardUser: FC<Users> = ({ user, loading }) => {
         user={formValue}
         isUpdate
       />
+
+      {/* modal-delete */}
+      <ModalComponent isOpen={isOpenDelete} handleClose={()=> setIsOpenDelete(false)} size='sm' position='center'>
+        <Box
+          component="div"
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: "center",
+            gap: 2,
+            p: 2
+          }}
+        >
+          <Typography 
+            variant="h6" 
+            color="text.primary"
+          >
+            {`Are you sure to delete, ${user.name}`}
+          </Typography>
+        </Box>
+
+        <Divider />
+
+        <Container
+          component="div" 
+          maxWidth="lg" 
+          sx={{ 
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: "end",
+            gap: 3,
+            py: 3,
+          }}
+        >
+          <Button 
+            type='button'
+            variant="outlined" 
+            color="primary"
+            sx={{ maxWidth: 'fit-content' }}
+            disabled={pending}
+            onClick={() => setIsOpenDelete(false)}
+          >
+            Dismiss
+          </Button>
+
+          <Button 
+            type='button'
+            variant="contained" 
+            color="primary"
+            sx={{ maxWidth: 'fit-content' }}
+            disabled={pending}
+            onClick={() => onDeleteUser(user?.id)}
+          >
+            {pending ? 
+            <Box sx={{ display: 'flex' }}>
+              <span>Loading...</span>
+              <CircularProgress size={20} />
+            </Box> : "Delete"
+            }
+          </Button>
+        </Container>
+      </ModalComponent>
+
+      {/* snackbar-alert-succes */}
+      <Snackbar
+        open={isOpenAlert} 
+        autoHideDuration={3000} 
+        onClose={handleCloseAlert}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        <Alert
+          onClose={handleCloseAlert}
+          severity="success"
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {isMessage}
+        </Alert>
+      </Snackbar>
     </Fragment>
   )
 }
