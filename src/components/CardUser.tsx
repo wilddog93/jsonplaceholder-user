@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { FC, Fragment, MouseEvent, useState } from 'react'
-import { 
-  Alert,
+import {
   Avatar, 
   Box, 
   Button, 
@@ -17,8 +16,7 @@ import {
   ListItemText, 
   Menu, 
   MenuItem, 
-  Skeleton, 
-  Snackbar, 
+  Skeleton,
   Typography 
 } from '@mui/material'
 import { deleteUser, selectUsers, UserProps } from '@/stores/features/users/userReducers';
@@ -27,6 +25,7 @@ import { DetailUser } from './DetailUser';
 import { FormUser } from './FormUser';
 import ModalComponent from './common/ModalComponent';
 import { useAppDispatch, useAppSelector } from '@/stores/Hooks';
+import { SnackbarAlert } from './SnackbarAlert';
 
 type Users = {
   user?: UserProps;
@@ -297,21 +296,12 @@ export const CardUser: FC<Users> = ({ user, loading }) => {
       </ModalComponent>
 
       {/* snackbar-alert-succes */}
-      <Snackbar
-        open={isOpenAlert} 
-        autoHideDuration={3000} 
-        onClose={handleCloseAlert}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-      >
-        <Alert
-          onClose={handleCloseAlert}
-          severity="success"
-          variant="filled"
-          sx={{ width: '100%' }}
-        >
-          {isMessage}
-        </Alert>
-      </Snackbar>
+      <SnackbarAlert 
+        isAlert='success'
+        isOpen={isOpenAlert}
+        handleClose={handleCloseAlert}
+        children={isMessage}
+      />
     </Fragment>
   )
 }

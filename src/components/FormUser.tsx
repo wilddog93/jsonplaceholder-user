@@ -6,9 +6,7 @@ import {
   Divider,
   TextField, Typography, Button,
   IconButton,
-  CircularProgress,
-  Snackbar,
-  Alert,
+  CircularProgress
 } from '@mui/material'
 import { createUser, selectUsers, updateUser, UserProps } from '@/stores/features/users/userReducers';
 import ModalComponent from '@/components/common/ModalComponent'
@@ -17,6 +15,7 @@ import 'react-international-phone/style.css';
 import { MuiPhone } from './common/MuiPhone';
 import { Close } from '@mui/icons-material';
 import { useAppDispatch, useAppSelector } from '@/stores/Hooks';
+import { SnackbarAlert } from './SnackbarAlert';
 
 interface Props {
   isOpen: boolean;
@@ -554,21 +553,12 @@ export const FormUser:FC<Props> = ({ isOpen, onClose, user, isUpdate }) => {
       </ModalComponent>
 
       {/* snackbar-alert-succes */}
-      <Snackbar 
-        open={isSuccess} 
-        autoHideDuration={3000} 
-        onClose={handleCloseAlert}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-      >
-        <Alert
-          onClose={handleCloseAlert}
-          severity="success"
-          variant="filled"
-          sx={{ width: '100%' }}
-        >
-          {isMessage}
-        </Alert>
-      </Snackbar>
+      <SnackbarAlert
+        isAlert='success'
+        isOpen={isSuccess}
+        handleClose={handleCloseAlert}
+        children={isMessage}
+      />
     </Fragment>
   )
 }
