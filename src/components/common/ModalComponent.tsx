@@ -62,10 +62,12 @@ const ModalComponent: FC<ModalProps> = ({ isOpen, handleClose, children, size, p
       top: positions,
       left: '50%',
       transform: 'translate(-50%, -50%)',
-      width: sizes,
+      width: "100%",
+      maxWidth: sizes,
       bgcolor: 'background.paper',
       p: 0,
-      borderRadius: "10px"
+      borderRadius: "10px",
+      overflowY: "auto"
     };
     return style;
   }, [sizes, positions])
@@ -83,6 +85,7 @@ const ModalComponent: FC<ModalProps> = ({ isOpen, handleClose, children, size, p
           timeout: 500,
         },
       }}
+      sx={{ overflowY: 'auto', height: '100%' }}
     >
       <Fade in={isOpen}>
         <Box sx={styles}>
